@@ -14,7 +14,7 @@ let
 in
 
 pkgs.symlinkJoin {
-  name = "posix-browser";
+  name = "netero-test";
   paths = [
     (basicScript "assert_equal" ./assert_equal.sh)
     (basicScript "assert_header_equal" ./assert_header_equal.sh)

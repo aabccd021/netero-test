@@ -8,8 +8,8 @@ in
   gotoTest = gotoTest;
   gotoTests = gotoTests;
   pkgs = {
-    posix-browser = posix-browser;
-    default = posix-browser;
+    netero-test = netero-test;
+    default = netero-test;
   };
 }
  

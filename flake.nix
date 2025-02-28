@@ -9,9 +9,15 @@
   outputs = { self, nixpkgs, treefmt-nix }:
     let
 
+      overlay = (final: prev: {
+        netero-test = import ./src {
+          pkgs = final;
+        };
+      });
+
       pkgs = import nixpkgs {
         system = "x86_64-linux";
-        overlays = [ ];
+        overlays = [ overlay ];
       };
 
       treefmtEval = treefmt-nix.lib.evalModule pkgs {
@@ -25,29 +31,22 @@
         settings.global.excludes = [ "LICENSE" ];
       };
 
-      posix-browser = import ./src {
-        pkgs = pkgs;
-      };
+      netero-test = import ./src { pkgs = pkgs; };
 
-      submitTests = import ./test/submit {
-        pkgs = pkgs;
-        posix-browser = posix-browser;
-      };
+      submitTests = import ./test/submit { pkgs = pkgs; };
+
+      gotoTests = import ./test/goto { pkgs = pkgs; };
 
       submitTest = pkgs.linkFarm "submitTest" submitTests;
-
-      gotoTests = import ./test/goto {
-        pkgs = pkgs;
-        posix-browser = posix-browser;
-      };
 
       gotoTest = pkgs.linkFarm "gotoTest" gotoTests;
 
       packages = submitTests // gotoTests // {
         formatting = treefmtEval.config.build.check self;
-        posix-browser = posix-browser;
         submitTest = submitTest;
         gotoTest = gotoTest;
+        netero-test = netero-test;
+        default = netero-test;
       };
 
       gcroot = packages // {
@@ -63,6 +62,8 @@
       checks.x86_64-linux = gcroot;
 
       formatter.x86_64-linux = treefmtEval.config.build.wrapper;
+
+      overlays.default = overlay;
 
     };
 }

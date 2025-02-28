@@ -1,4 +1,4 @@
-{ pkgs, posix-browser }:
+{ pkgs }:
 let
 
   lib = pkgs.lib;
@@ -19,7 +19,7 @@ let
       {
         buildInputs = [
           pkgs.jq
-          posix-browser
+          pkgs.netero-test
           server
         ];
       } ''
@@ -51,7 +51,7 @@ let
   test = testFile:
     pkgs.runCommandLocal ""
       {
-        buildInputs = [ posix-browser pkgs.jq ];
+        buildInputs = [ pkgs.netero-test pkgs.jq ];
       } ''
       export NETERO_DIR="$PWD/var/lib/netero"
       mkdir -p "$NETERO_DIR"
