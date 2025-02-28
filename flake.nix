@@ -29,14 +29,14 @@
         pkgs = pkgs;
       };
 
-      submitTests = import ./submit_test {
+      submitTests = import ./test/submit {
         pkgs = pkgs;
         posix-browser = posix-browser;
       };
 
       submitTest = pkgs.linkFarm "submitTest" submitTests;
 
-      gotoTests = import ./goto_test {
+      gotoTests = import ./test/goto {
         pkgs = pkgs;
         posix-browser = posix-browser;
       };
