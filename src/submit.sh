@@ -291,7 +291,7 @@ fi
 curl_options="$curl_options \
   --cookie "$NETERO_DIR/cookie.txt" \
   --cookie-jar "$NETERO_DIR/cookie.txt" \
-  --output "$NETERO_DIR/page.html" \
+  --output "$NETERO_DIR/body" \
   --write-out '%output{$NETERO_DIR/url.txt}%{url_effective}%output{./header.json}%{header_json}%output{$NETERO_DIR/response.json}%{json}' \
   --compressed \
   --show-error \
@@ -316,3 +316,10 @@ if [ -f "$NETERO_DIR/url.txt" ]; then
 fi
 
 eval "curl $curl_options '$url'"
+
+content_type=$(jq -r '.["content-type"][0]' ./header.json)
+if [ "$content_type" = "text/html" ]; then
+  cp "$NETERO_DIR/body" "$NETERO_DIR/page.html"
+elif [ -f "$NETERO_DIR/page.html" ]; then
+  rm "$NETERO_DIR/page.html"
+fi
