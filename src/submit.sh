@@ -315,11 +315,11 @@ if [ -f "$NETERO_DIR/url.txt" ]; then
 
 fi
 
-rm -rf "${NETERO_DIR:?}"/*
-
 eval "curl $curl_options '$url'"
 
 content_type=$(jq -r '.["content-type"][0]' ./header.json)
 if [ "$content_type" = "text/html" ]; then
   cp "$NETERO_DIR/body" "$NETERO_DIR/page.html"
+elif [ -f "$NETERO_DIR/page.html" ]; then
+  rm "$NETERO_DIR/page.html"
 fi
