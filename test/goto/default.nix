@@ -34,7 +34,7 @@ let
     echo "http://localhost:8080/" > "$NETERO_DIR/url.txt"
 
     test_script=$(cat ${testFile})
-    bash -euo pipefail -c "$test_script" 2>&1 | while IFS= read -r line; do
+    bash -euo pipefail ${testFile} 2>&1 | while IFS= read -r line; do
       printf '\033[33m[client]\033[0m %s\n' "$line"
     done
 
