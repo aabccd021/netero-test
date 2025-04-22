@@ -29,7 +29,6 @@ pkgs.symlinkJoin {
     (basicScript "assert_url_equal" ./assert_url_equal.sh)
     (basicScript "assert_url_length_equal" ./assert_url_length_equal.sh)
     (basicScript "assert_url_starts_with" ./assert_url_starts_with.sh)
-    (basicScript "advance_time" ./advance_time.sh)
     (basicScript "goto" ./goto.sh)
     (basicScript "submit" ./submit.sh)
   ];
