@@ -1,4 +1,4 @@
-NETERO_DIR=$(cat "$NETERO_BROWSER_STATE_FILE")
+browser_state=$(cat "$NETERO_BROWSER_STATE_FILE")
 
 queryStr=${1:-}
 
@@ -7,7 +7,7 @@ if [ -z "$queryStr" ]; then
   exit 1
 fi
 
-query_result=$(xidel "$NETERO_DIR/page.html" --silent --extract "$queryStr")
+query_result=$(xidel "$browser_state/page.html" --silent --extract "$queryStr")
 if [ -n "$query_result" ]; then
   echo "Assertion error: assert_query_returns_empty \"$queryStr\""
   echo "expected empty, but got:"

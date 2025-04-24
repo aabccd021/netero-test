@@ -1,4 +1,4 @@
-NETERO_DIR=$(cat "$NETERO_BROWSER_STATE_FILE")
+browser_state=$(cat "$NETERO_BROWSER_STATE_FILE")
 
 expected=${1:-}
 
@@ -9,7 +9,7 @@ fi
 
 tmpdir=$(mktemp -d)
 printf "%s" "$expected" >"$tmpdir/expected"
-cp "$NETERO_DIR/url.txt" "$tmpdir/actual"
+cp "$browser_state/url.txt" "$tmpdir/actual"
 
 chmod 700 -R "$tmpdir"
 

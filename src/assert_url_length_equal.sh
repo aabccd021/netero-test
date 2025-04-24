@@ -1,4 +1,4 @@
-NETERO_DIR=$(cat "$NETERO_BROWSER_STATE_FILE")
+browser_state=$(cat "$NETERO_BROWSER_STATE_FILE")
 
 expected=${1:-}
 
@@ -7,7 +7,7 @@ if [ -z "$expected" ]; then
   exit 1
 fi
 
-url=$(cat "$NETERO_DIR/url.txt")
+url=$(cat "$browser_state/url.txt")
 url_length=${#url}
 if [ "$url_length" -eq "$expected" ]; then
   exit 0

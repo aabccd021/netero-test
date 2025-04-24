@@ -1,6 +1,6 @@
-NETERO_DIR=$(cat "$NETERO_BROWSER_STATE_FILE")
+browser_state=$(cat "$NETERO_BROWSER_STATE_FILE")
 
-cat >"$NETERO_DIR/page.html" <<EOF
+cat >"$browser_state/page.html" <<EOF
 <form action="/form">
   <input type="text" name="loremInput">
   <button type="submit">Submit</button>
@@ -15,4 +15,4 @@ printf "GET http://localhost:8080/form?loremInput=foo" >./expected.txt
 diff --unified --color=always ./expected.txt ./request.txt
 
 printf "<p>Redirected</p>" >./expected.txt
-diff --unified --color=always ./expected.txt "$NETERO_DIR/page.html"
+diff --unified --color=always ./expected.txt "$browser_state/page.html"

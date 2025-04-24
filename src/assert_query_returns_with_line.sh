@@ -1,4 +1,4 @@
-NETERO_DIR=$(cat "$NETERO_BROWSER_STATE_FILE")
+browser_state=$(cat "$NETERO_BROWSER_STATE_FILE")
 
 queryStr=${1:-}
 expectedLine=${2:-}
@@ -8,7 +8,7 @@ if [ -z "$expectedLine" ] || [ -z "$queryStr" ]; then
   exit 1
 fi
 
-query_result=$(xidel "$NETERO_DIR/page.html" --silent --extract "$queryStr")
+query_result=$(xidel "$browser_state/page.html" --silent --extract "$queryStr")
 while IFS= read -r line; do
   if [ "$line" = "$expectedLine" ]; then
     exit 0

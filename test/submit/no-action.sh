@@ -1,8 +1,8 @@
-NETERO_DIR=$(cat "$NETERO_BROWSER_STATE_FILE")
+browser_state=$(cat "$NETERO_BROWSER_STATE_FILE")
 
-echo "http://localhost:8080/myform" >"$NETERO_DIR/url.txt"
+echo "http://localhost:8080/myform" >"$browser_state/url.txt"
 
-cat >"$NETERO_DIR/page.html" <<EOF
+cat >"$browser_state/page.html" <<EOF
 <form method="post">
   <button type="submit">Submit</button>
 </form>

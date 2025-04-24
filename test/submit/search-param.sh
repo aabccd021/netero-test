@@ -1,6 +1,6 @@
-NETERO_DIR=$(cat "$NETERO_BROWSER_STATE_FILE")
+browser_state=$(cat "$NETERO_BROWSER_STATE_FILE")
 
-cat >"$NETERO_DIR/page.html" <<EOF
+cat >"$browser_state/page.html" <<EOF
 <form method="post" action="/form?dolorInput=amet&hunterInput=netero">
   <input type="text" name="loremInput">
   <button type="submit">Submit</button>

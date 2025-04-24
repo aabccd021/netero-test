@@ -1,4 +1,4 @@
-NETERO_DIR=$(cat "$NETERO_BROWSER_STATE_FILE")
+browser_state=$(cat "$NETERO_BROWSER_STATE_FILE")
 
 prefix=${1:-}
 
@@ -7,7 +7,7 @@ if [ -z "$prefix" ]; then
   exit 1
 fi
 
-actual="$(cat "$NETERO_DIR/url.txt")"
+actual="$(cat "$browser_state/url.txt")"
 
 case "$actual" in
 "$prefix"*)
