@@ -193,9 +193,9 @@ EOF
 fi
 
 curl_options=" \
-  --cookie "$browser_state/cookie.txt" \
-  --cookie-jar "$browser_state/cookie.txt" \
-  --output "$browser_state/body" \
+  --cookie $browser_state/cookie.txt \
+  --cookie-jar $browser_state/cookie.txt \
+  --output $browser_state/body \
   --write-out \"%output{$browser_state/url.txt}%{url_effective}%output{./header.json}%{header_json}%output{$browser_state/response.json}%{json}\" \
   --compressed \
   --show-error \
