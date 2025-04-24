@@ -21,6 +21,8 @@ let
     mkdir ./var
     export NETERO_STATE="$PWD/var/netero"
     mkdir -p ./var/netero/browser/1
+    printf "1" > ./var/netero/active-browser.txt
+    printf "1" > ./var/netero/active-tab.txt
     mkdir -p ./run/netero
     mkfifo ./run/netero/ready.fifo
     mkfifo ./run/netero/exit.fifo
