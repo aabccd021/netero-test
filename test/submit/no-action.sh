@@ -1,4 +1,4 @@
-browser_state=$(cat "$NETERO_STATE")
+browser_state="$NETERO_STATE/browser/1"
 tab_state="$browser_state/tab/1"
 
 echo "http://localhost:8080/myform" >"$tab_state/url.txt"
