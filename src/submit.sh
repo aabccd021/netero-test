@@ -1,3 +1,5 @@
+NETERO_DIR=$(cat "$NETERO_BROWSER_STATE_FILE")
+
 # Multiple files from single input is not supported
 # -F 'file=@/path/to/your/file1.txt' \
 # -F 'file=@/path/to/your/file2.jpg' \

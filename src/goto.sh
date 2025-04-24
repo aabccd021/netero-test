@@ -1,3 +1,5 @@
+NETERO_DIR=$(cat "$NETERO_BROWSER_STATE_FILE")
+
 url=""
 anchor_href=""
 anchor_href_with_text=""

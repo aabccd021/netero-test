@@ -1,3 +1,5 @@
+NETERO_DIR=$(cat "$NETERO_BROWSER_STATE_FILE")
+
 expected=${1:-}
 
 if [ -z "$expected" ]; then

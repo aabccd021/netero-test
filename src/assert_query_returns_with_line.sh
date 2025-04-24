@@ -1,3 +1,5 @@
+NETERO_DIR=$(cat "$NETERO_BROWSER_STATE_FILE")
+
 queryStr=${1:-}
 expectedLine=${2:-}
 

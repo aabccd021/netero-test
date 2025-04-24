@@ -23,8 +23,10 @@ let
           server
         ];
       } ''
-      export NETERO_DIR="$PWD/var/lib/netero"
-      mkdir -p "$NETERO_DIR"
+      mkdir ./var
+      export NETERO_BROWSER_STATE_FILE="$PWD/var/browser-state.txt"
+      printf "$PWD/var/lib/browser1" > "$PWD/var/browser-state.txt"
+      mkdir -p ./var/lib/browser1
       mkdir -p ./run/netero
       mkfifo ./run/netero/ready.fifo
       mkfifo ./run/netero/exit.fifo
@@ -36,7 +38,7 @@ let
 
       cat ./run/netero/ready.fifo >/dev/null
 
-      echo "http://localhost:8080/" > "$NETERO_DIR/url.txt"
+      echo "http://localhost:8080/" > "$PWD/var/lib/browser1/url.txt"
 
       bash -euo pipefail ${testFile} 2>&1 | while IFS= read -r line; do
         printf '\033[33m[client]\033[0m %s\n' "$line"
@@ -52,8 +54,10 @@ let
       {
         buildInputs = [ pkgs.netero-test pkgs.jq ];
       } ''
-      export NETERO_DIR="$PWD/var/lib/netero"
-      mkdir -p "$NETERO_DIR"
+      mkdir ./var
+      export NETERO_BROWSER_STATE_FILE="$PWD/var/browser-state.txt"
+      printf "$PWD/var/lib/browser1" > "$PWD/var/browser-state.txt"
+      mkdir -p ./var/lib/browser1
 
       bash -euo pipefail ${testFile} 2>&1 | while IFS= read -r line; do
         printf '\033[33m[client]\033[0m %s\n' "$line"

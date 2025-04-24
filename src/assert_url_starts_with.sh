@@ -1,3 +1,5 @@
+NETERO_DIR=$(cat "$NETERO_BROWSER_STATE_FILE")
+
 prefix=${1:-}
 
 if [ -z "$prefix" ]; then

@@ -1,3 +1,5 @@
+NETERO_DIR=$(cat "$NETERO_BROWSER_STATE_FILE")
+
 echo "http://localhost:8080/myform" >"$NETERO_DIR/url.txt"
 
 cat >"$NETERO_DIR/page.html" <<EOF

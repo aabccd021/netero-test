@@ -1,3 +1,5 @@
+NETERO_DIR=$(cat "$NETERO_BROWSER_STATE_FILE")
+
 cat >"$NETERO_DIR/page.html" <<EOF
 <form id="myform" action="/form" method="post">
   <input type="text" name="loremInput">
