@@ -1,4 +1,5 @@
 browser_state=$(cat "$NETERO_BROWSER_STATE_FILE")
+tab_state="$browser_state/tab/1"
 
 queryStr=${1:-}
 
@@ -7,7 +8,7 @@ if [ -z "$queryStr" ]; then
   exit 1
 fi
 
-query_result=$(xidel "$browser_state/page.html" --silent --extract "$queryStr")
+query_result=$(xidel "$tab_state/page.html" --silent --extract "$queryStr")
 if [ -z "$query_result" ]; then
   echo "Error: assert_query_returns_non_empty $*"
   exit 1

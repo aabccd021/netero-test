@@ -1,6 +1,7 @@
 browser_state=$(cat "$NETERO_BROWSER_STATE_FILE")
+tab_state="$browser_state/tab/1"
 
-cat >"$browser_state/page.html" <<EOF
+cat >"$tab_state/page.html" <<EOF
 <form action="/form" method="post" enctype="multipart/form-data">
   <input type="text" name="loremInput">
   <button type="submit">Submit</button>
@@ -17,4 +18,4 @@ printf "POST http://localhost:8080/form" >./expected.txt
 diff --unified --color=always ./expected.txt ./request.txt
 
 printf "<p>Redirected</p>" >./expected.txt
-diff --unified --color=always ./expected.txt "$browser_state/page.html"
+diff --unified --color=always ./expected.txt "$tab_state/page.html"

@@ -1,4 +1,5 @@
 browser_state=$(cat "$NETERO_BROWSER_STATE_FILE")
+tab_state="$browser_state/tab/1"
 
 expected=${1:-}
 
@@ -7,7 +8,7 @@ if [ -z "$expected" ]; then
   exit 1
 fi
 
-actual=$(jq -r .response_code "$browser_state/response.json")
+actual=$(jq -r .response_code "$tab_state/response.json")
 if [ "$expected" != "$actual" ]; then
   echo "Error: assert_response_code_equal $*" >&2
   echo "Actual error code: $actual" >&2

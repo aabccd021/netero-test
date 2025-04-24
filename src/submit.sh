@@ -1,4 +1,6 @@
 browser_state=$(cat "$NETERO_BROWSER_STATE_FILE")
+tab_state="$browser_state/tab/1"
+mkdir -p "$tab_state"
 
 # Multiple files from single input is not supported
 # -F 'file=@/path/to/your/file1.txt' \
@@ -97,7 +99,7 @@ while [ $# -gt 0 ]; do
   shift
 done
 
-form_el=$(xidel "$browser_state/page.html" -e "$form_query" --html)
+form_el=$(xidel "$tab_state/page.html" -e "$form_query" --html)
 form_count=$(echo "$form_el" | xidel -e "count(//form)")
 if [ "$form_count" -eq 0 ]; then
   echo "Error: Form not found" >&2
@@ -114,8 +116,8 @@ fi
 form_id=$(echo "$form_el" | xidel -e '//form/@id')
 
 action=$(echo "$form_el" | xidel -e '//form/@action')
-if [ -z "$action" ] && [ -f "$browser_state/url.txt" ]; then
-  action=$(cat "$browser_state/url.txt")
+if [ -z "$action" ] && [ -f "$tab_state/url.txt" ]; then
+  action=$(cat "$tab_state/url.txt")
 fi
 
 if [ -z "$action" ]; then
@@ -141,10 +143,10 @@ curl_options="$curl_options --header 'Content-Type: $enc_type'"
 form_data=""
 
 if [ -n "$submit_button_query" ]; then
-  submit_button_el=$(xidel "$browser_state/page.html" -e "$submit_button_query" --html)
+  submit_button_el=$(xidel "$tab_state/page.html" -e "$submit_button_query" --html)
 else
   submit_button_el_inside_form=$(echo "$form_el" | xidel -e "//form//button" --html)
-  submit_button_el_outside_form=$(xidel "$browser_state/page.html" --html -e "//button[@form='$form_id']")
+  submit_button_el_outside_form=$(xidel "$tab_state/page.html" --html -e "//button[@form='$form_id']")
   submit_button_el="$submit_button_el_inside_form $submit_button_el_outside_form"
 fi
 
@@ -291,10 +293,10 @@ elif [ "$method" = "get" ] || [ -z "$method" ]; then
 fi
 
 curl_options="$curl_options \
-  --cookie "$browser_state/cookie.txt" \
-  --cookie-jar "$browser_state/cookie.txt" \
-  --output "$browser_state/body" \
-  --write-out '%output{$browser_state/url.txt}%{url_effective}%output{./header.json}%{header_json}%output{$browser_state/response.json}%{json}' \
+  --cookie $browser_state/cookie.txt \
+  --cookie-jar $browser_state/cookie.txt \
+  --output $tab_state/body \
+  --write-out '%output{$tab_state/url.txt}%{url_effective}%output{./header.json}%{header_json}%output{$tab_state/response.json}%{json}' \
   --compressed \
   --show-error \
   --silent \
@@ -303,8 +305,8 @@ curl_options="$curl_options \
 
 url="$action"
 
-if [ -f "$browser_state/url.txt" ]; then
-  current_url=$(cat "$browser_state/url.txt")
+if [ -f "$tab_state/url.txt" ]; then
+  current_url=$(cat "$tab_state/url.txt")
   current_host=$(echo "$current_url" | cut -d/ -f1-3)
   curl_options="$curl_options \
     --referer '$current_url' \
@@ -321,7 +323,7 @@ eval "curl $curl_options '$url'"
 
 content_type=$(jq -r '.["content-type"][0]' ./header.json)
 if [ "$content_type" = "text/html" ]; then
-  cp "$browser_state/body" "$browser_state/page.html"
-elif [ -f "$browser_state/page.html" ]; then
-  rm "$browser_state/page.html"
+  cp "$tab_state/body" "$tab_state/page.html"
+elif [ -f "$tab_state/page.html" ]; then
+  rm "$tab_state/page.html"
 fi

@@ -1,4 +1,5 @@
 browser_state=$(cat "$NETERO_BROWSER_STATE_FILE")
+tab_state="$browser_state/tab/1"
 
 expected=${1:-}
 
@@ -7,7 +8,7 @@ if [ -z "$expected" ]; then
   exit 1
 fi
 
-if ! grep -q "$expected" "$browser_state/page.html"; then
+if ! grep -q "$expected" "$tab_state/page.html"; then
   echo "Error: Text not found in page"
   echo "Text:"
   echo "$expected"

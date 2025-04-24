@@ -1,6 +1,7 @@
 browser_state=$(cat "$NETERO_BROWSER_STATE_FILE")
+tab_state="$browser_state/tab/1"
 
-cat >"$browser_state/page.html" <<EOF
+cat >"$tab_state/page.html" <<EOF
 <form action="/form" method="post" id="myForm">
   <input type="text" name="loremInput">
   <button>Submit foo</button>

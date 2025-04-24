@@ -1,4 +1,6 @@
 browser_state=$(cat "$NETERO_BROWSER_STATE_FILE")
+tab_state="$browser_state/tab/1"
+mkdir -p "$tab_state"
 
 url=""
 anchor_href=""
@@ -42,12 +44,12 @@ done
 
 if [ -n "$anchor_href" ]; then
 
-  if [ ! -f "$browser_state/page.html" ]; then
+  if [ ! -f "$tab_state/page.html" ]; then
     echo "Error: No page.html found" >&2
     exit 1
   fi
 
-  returned_urls=$(xidel "$browser_state/page.html" -e "//a/@href")
+  returned_urls=$(xidel "$tab_state/page.html" -e "//a/@href")
 
   url=""
   for returned_url in $returned_urls; do
@@ -66,16 +68,16 @@ if [ -n "$anchor_href" ]; then
   fi
 
 elif [ -n "$anchor_href_with_text" ]; then
-  if [ ! -f "$browser_state/page.html" ]; then
+  if [ ! -f "$tab_state/page.html" ]; then
     echo "Error: No page.html found" >&2
     exit 1
   fi
-  texts=$(xidel "$browser_state/page.html" -e "//a/text()")
+  texts=$(xidel "$tab_state/page.html" -e "//a/text()")
 
   a_el=""
   while IFS= read -r text; do
     if [ "$anchor_href_with_text" = "$text" ]; then
-      a_el=$(xidel "$browser_state/page.html" --html -e "//a[text()='$anchor_href_with_text']")
+      a_el=$(xidel "$tab_state/page.html" --html -e "//a[text()='$anchor_href_with_text']")
       break
     fi
   done <<EOF
@@ -99,17 +101,17 @@ EOF
 
 elif [ -n "$anchor_href_with_aria_label" ]; then
 
-  if [ ! -f "$browser_state/page.html" ]; then
+  if [ ! -f "$tab_state/page.html" ]; then
     echo "Error: No page.html found" >&2
     exit 1
   fi
 
-  aria_labels=$(xidel "$browser_state/page.html" -e "//a/@aria-label")
+  aria_labels=$(xidel "$tab_state/page.html" -e "//a/@aria-label")
 
   a_el=""
   while IFS= read -r aria_label; do
     if [ "$anchor_href_with_aria_label" = "$aria_label" ]; then
-      a_el=$(xidel "$browser_state/page.html" --html -e "//a[@aria-label='$anchor_href_with_aria_label']")
+      a_el=$(xidel "$tab_state/page.html" --html -e "//a[@aria-label='$anchor_href_with_aria_label']")
       break
     fi
   done <<EOF
@@ -133,12 +135,12 @@ EOF
 
 elif [ -n "$img_src" ]; then
 
-  if [ ! -f "$browser_state/page.html" ]; then
+  if [ ! -f "$tab_state/page.html" ]; then
     echo "Error: No page.html found" >&2
     exit 1
   fi
 
-  returned_srcs=$(xidel "$browser_state/page.html" -e "//img/@src")
+  returned_srcs=$(xidel "$tab_state/page.html" -e "//img/@src")
 
   url=""
   for returned_src in $returned_srcs; do
@@ -158,17 +160,17 @@ elif [ -n "$img_src" ]; then
 
 elif [ -n "$img_src_with_alt" ]; then
 
-  if [ ! -f "$browser_state/page.html" ]; then
+  if [ ! -f "$tab_state/page.html" ]; then
     echo "Error: No page.html found" >&2
     exit 1
   fi
 
-  alts=$(xidel "$browser_state/page.html" -e "//img/@alt")
+  alts=$(xidel "$tab_state/page.html" -e "//img/@alt")
 
   img_el=""
   while IFS= read -r alt; do
     if [ "$img_src_with_alt" = "$alt" ]; then
-      img_el=$(xidel "$browser_state/page.html" --html -e "//img[@alt='$img_src_with_alt']")
+      img_el=$(xidel "$tab_state/page.html" --html -e "//img[@alt='$img_src_with_alt']")
       break
     fi
   done <<EOF
@@ -195,16 +197,16 @@ fi
 curl_options=" \
   --cookie $browser_state/cookie.txt \
   --cookie-jar $browser_state/cookie.txt \
-  --output $browser_state/body \
-  --write-out \"%output{$browser_state/url.txt}%{url_effective}%output{./header.json}%{header_json}%output{$browser_state/response.json}%{json}\" \
+  --output $tab_state/body \
+  --write-out \"%output{$tab_state/url.txt}%{url_effective}%output{./header.json}%{header_json}%output{$tab_state/response.json}%{json}\" \
   --compressed \
   --show-error \
   --silent \
   --location \
 "
 
-if [ -f "$browser_state/url.txt" ]; then
-  current_url=$(cat "$browser_state/url.txt")
+if [ -f "$tab_state/url.txt" ]; then
+  current_url=$(cat "$tab_state/url.txt")
   current_host=$(echo "$current_url" | cut -d/ -f1-3)
   curl_options="$curl_options \
     --referer '$current_url' \
@@ -221,7 +223,7 @@ eval "curl $curl_options '$url'"
 
 content_type=$(jq -r '.["content-type"][0]' ./header.json)
 if [ "$content_type" = "text/html" ]; then
-  cp "$browser_state/body" "$browser_state/page.html"
-elif [ -f "$browser_state/page.html" ]; then
-  rm "$browser_state/page.html"
+  cp "$tab_state/body" "$tab_state/page.html"
+elif [ -f "$tab_state/page.html" ]; then
+  rm "$tab_state/page.html"
 fi

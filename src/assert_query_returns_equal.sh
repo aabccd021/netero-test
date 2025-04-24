@@ -1,4 +1,5 @@
 browser_state=$(cat "$NETERO_BROWSER_STATE_FILE")
+tab_state="$browser_state/tab/1"
 
 queryStr=${1:-}
 expected=${2:-}
@@ -10,7 +11,7 @@ fi
 
 tmpdir=$(mktemp -d)
 echo "$expected" >"$tmpdir/expected"
-xidel "$browser_state/page.html" --silent --extract "$queryStr" >"$tmpdir/actual"
+xidel "$tab_state/page.html" --silent --extract "$queryStr" >"$tmpdir/actual"
 
 err_code=0
 diff --color=always --unified "$tmpdir/actual" "$tmpdir/expected" || err_code=$?

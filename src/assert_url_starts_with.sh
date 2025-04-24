@@ -1,4 +1,5 @@
 browser_state=$(cat "$NETERO_BROWSER_STATE_FILE")
+tab_state="$browser_state/tab/1"
 
 prefix=${1:-}
 
@@ -7,7 +8,7 @@ if [ -z "$prefix" ]; then
   exit 1
 fi
 
-actual="$(cat "$browser_state/url.txt")"
+actual="$(cat "$tab_state/url.txt")"
 
 case "$actual" in
 "$prefix"*)

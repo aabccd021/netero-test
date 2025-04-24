@@ -1,8 +1,9 @@
 browser_state=$(cat "$NETERO_BROWSER_STATE_FILE")
+tab_state="$browser_state/tab/1"
 
-echo "http://localhost:8080/myform" >"$browser_state/url.txt"
+echo "http://localhost:8080/myform" >"$tab_state/url.txt"
 
-cat >"$browser_state/page.html" <<EOF
+cat >"$tab_state/page.html" <<EOF
 <form method="post">
   <button type="submit">Submit</button>
 </form>
