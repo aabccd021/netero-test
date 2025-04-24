@@ -1,4 +1,4 @@
-browser_state=$(cat "$NETERO_BROWSER_STATE_FILE")
+browser_state=$(cat "$NETERO_STATE")
 tab_state="$browser_state/tab/1"
 
 expected=${1:-}

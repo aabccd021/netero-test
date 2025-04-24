@@ -24,7 +24,7 @@ let
         ];
       } ''
       mkdir ./var
-      export NETERO_BROWSER_STATE_FILE="$PWD/var/browser-state.txt"
+      export NETERO_STATE="$PWD/var/browser-state.txt"
       printf "$PWD/var/lib/browser/1" > "$PWD/var/browser-state.txt"
       mkdir -p ./var/lib/browser/1/tab/1
       mkdir -p ./run/netero
@@ -55,7 +55,7 @@ let
         buildInputs = [ pkgs.netero-test pkgs.jq ];
       } ''
       mkdir ./var
-      export NETERO_BROWSER_STATE_FILE="$PWD/var/browser-state.txt"
+      export NETERO_STATE="$PWD/var/browser-state.txt"
       printf "$PWD/var/lib/browser/1" > "$PWD/var/browser-state.txt"
       mkdir -p ./var/lib/browser/1/tab/1
 
