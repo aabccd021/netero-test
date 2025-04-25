@@ -1,13 +1,11 @@
-browser_state="$NETERO_STATE/browser/$(cat "$NETERO_STATE/active-browser.txt")"
-tab_state="$browser_state/tab/$(cat "$NETERO_STATE/active-tab.txt")"
-mkdir -p "$tab_state"
-
 url=""
 anchor_href=""
 anchor_href_with_text=""
 anchor_href_with_aria_label=""
 img_src=""
 img_src_with_alt=""
+browser_idx="$(cat "$NETERO_STATE/active-browser.txt")"
+tab_idx="$(cat "$NETERO_STATE/active-tab.txt")"
 while [ $# -gt 0 ]; do
   case $1 in
   --url)
@@ -34,6 +32,14 @@ while [ $# -gt 0 ]; do
     img_src_with_alt=$2
     shift
     ;;
+  --browser)
+    browser_idx=$2
+    shift
+    ;;
+  --tab)
+    tab_idx=$2
+    shift
+    ;;
   *)
     echo "Error: Unknown flag: $1" >&2
     exit 1
@@ -41,6 +47,10 @@ while [ $# -gt 0 ]; do
   esac
   shift
 done
+
+browser_state="$NETERO_STATE/browser/$browser_idx"
+tab_state="$browser_state/tab/$tab_idx"
+mkdir -p "$tab_state"
 
 if [ -n "$anchor_href" ]; then
 
