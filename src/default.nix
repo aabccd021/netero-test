@@ -25,6 +25,7 @@ pkgs.symlinkJoin {
     (basicScript "assert_query_returns_with_line" ./assert_query_returns_with_line.sh)
     (basicScript "assert_response_code_equal" ./assert_response_code_equal.sh)
     (basicScript "assert_snapshot_equal" ./assert_snapshot_equal.sh)
+    (basicScript "assert_snapshot_equal_body" ./assert_snapshot_equal_body.sh)
     (basicScript "assert_starts_with" ./assert_starts_with.sh)
     (basicScript "assert_url_equal" ./assert_url_equal.sh)
     (basicScript "assert_url_length_equal" ./assert_url_length_equal.sh)
