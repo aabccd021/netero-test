@@ -33,5 +33,6 @@ pkgs.symlinkJoin {
     (basicScript "submit" ./submit.sh)
     (basicScript "netero_init" ./netero_init.sh)
     (basicScript "tab_switch" ./tab_switch.sh)
+    (basicScript "browser_switch" ./browser_switch.sh)
   ];
 }
