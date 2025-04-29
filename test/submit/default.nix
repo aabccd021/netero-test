@@ -26,7 +26,6 @@ let
       mkdir ./var
       export NETERO_STATE="$PWD/var/netero"
       netero_init
-      mkdir -p ./run/netero
       mkfifo ./ready.fifo
       mkfifo ./exit.fifo
 
