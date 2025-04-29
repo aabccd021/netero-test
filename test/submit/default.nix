@@ -25,9 +25,7 @@ let
       } ''
       mkdir ./var
       export NETERO_STATE="$PWD/var/netero"
-      mkdir -p ./var/netero/browser/1/tab/1
-      printf "1" > ./var/netero/active-browser.txt
-      printf "1" > ./var/netero/active-tab.txt
+      netero_init
       mkdir -p ./run/netero
       mkfifo ./run/netero/ready.fifo
       mkfifo ./run/netero/exit.fifo
@@ -57,9 +55,7 @@ let
       } ''
       mkdir ./var
       export NETERO_STATE="$PWD/var/netero"
-      mkdir -p ./var/netero/browser/1/tab/1
-      printf "1" > ./var/netero/active-browser.txt
-      printf "1" > ./var/netero/active-tab.txt
+      netero_init
 
       bash -euo pipefail ${testFile} 2>&1 | while IFS= read -r line; do
         printf '\033[33m[client]\033[0m %s\n' "$line"
