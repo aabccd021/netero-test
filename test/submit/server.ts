@@ -26,9 +26,9 @@ const server = Bun.serve({
   },
 });
 
-await Bun.write("./run/netero/ready.fifo", "");
+await Bun.write("./ready.fifo", "");
 
-await Bun.file("./run/netero/exit.fifo").text();
+await Bun.file("./exit.fifo").text();
 
 await server.stop();
 process.exit(0);
