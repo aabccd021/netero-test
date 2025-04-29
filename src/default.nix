@@ -32,6 +32,7 @@ pkgs.symlinkJoin {
     (basicScript "assert_url_starts_with" ./assert_url_starts_with.sh)
     (basicScript "goto" ./goto.sh)
     (basicScript "submit" ./submit.sh)
+    (basicScript "time_advance" ./time_advance.sh)
     (basicScript "netero_init" ./netero_init.sh)
     (basicScript "tab_switch" ./tab_switch.sh)
     (basicScript "browser_switch" ./browser_switch.sh)
