@@ -26,41 +26,41 @@
         programs.prettier.enable = true;
         programs.shfmt.enable = true;
         programs.shellcheck.enable = true;
-        programs.gofumpt.enable = true;
         settings.formatter.shellcheck.options = [ "-s" "sh" ];
         settings.global.excludes = [ "LICENSE" ];
       };
+
+      formatter = treefmtEval.config.build.wrapper;
 
       submitTests = import ./test/submit { pkgs = pkgs; };
 
       gotoTests = import ./test/goto { pkgs = pkgs; };
 
-      submitTest = pkgs.linkFarm "submitTest" submitTests;
-
-      gotoTest = pkgs.linkFarm "gotoTest" gotoTests;
-
-      packages = submitTests // gotoTests // {
-        formatting = treefmtEval.config.build.check self;
-        submitTest = submitTest;
-        gotoTest = gotoTest;
-        netero-test = pkgs.netero-test;
-        default = pkgs.netero-test;
+      devShells.default = pkgs.mkShellNoCC {
+        buildInputs = [
+          pkgs.nixd
+        ];
       };
 
-      gcroot = packages // {
-        gcroot = pkgs.linkFarm "gcroot" packages;
+      packages = devShells // submitTests // gotoTests // {
+        formatting = treefmtEval.config.build.check self;
+        submitTest = pkgs.linkFarm "submitTest" submitTests;
+        gotoTest = pkgs.linkFarm "gotoTest" gotoTests;
+        netero-test = pkgs.netero-test;
+        default = pkgs.netero-test;
       };
 
     in
 
     {
 
-      packages.x86_64-linux = gcroot;
+      packages.x86_64-linux = packages // {
+        gcroot = pkgs.linkFarm "gcroot" packages;
+      };
 
-      checks.x86_64-linux = gcroot;
-
-      formatter.x86_64-linux = treefmtEval.config.build.wrapper;
-
+      checks.x86_64-linux = packages;
+      formatter.x86_64-linux = formatter;
+      devShells.x86_64-linux = devShells;
       overlays.default = overlay;
 
     };
