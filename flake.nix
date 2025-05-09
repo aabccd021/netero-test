@@ -31,8 +31,6 @@
         settings.global.excludes = [ "LICENSE" ];
       };
 
-      netero-test = import ./src { pkgs = pkgs; };
-
       submitTests = import ./test/submit { pkgs = pkgs; };
 
       gotoTests = import ./test/goto { pkgs = pkgs; };
@@ -45,8 +43,8 @@
         formatting = treefmtEval.config.build.check self;
         submitTest = submitTest;
         gotoTest = gotoTest;
-        netero-test = netero-test;
-        default = netero-test;
+        netero-test = pkgs.netero-test;
+        default = pkgs.netero-test;
       };
 
       gcroot = packages // {
