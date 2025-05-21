@@ -3,7 +3,8 @@ let
 
   lib = pkgs.lib;
 
-  serverTest = serverSrc: testFile:
+  serverTest =
+    serverSrc: testFile:
     let
       server = pkgs.runCommandLocal "server" { } ''
         ${pkgs.bun}/bin/bun build ${serverSrc} \
@@ -22,45 +23,51 @@ let
           pkgs.netero-test
           server
         ];
-      } ''
-      mkdir ./var
-      export NETERO_STATE="$PWD/var/netero"
-      netero_init
-      mkfifo ./ready.fifo
-      mkfifo ./exit.fifo
+      }
+      ''
+        mkdir ./var
+        export NETERO_STATE="$PWD/var/netero"
+        netero_init
+        mkfifo ./ready.fifo
+        mkfifo ./exit.fifo
 
-      server 2>&1 | while IFS= read -r line; do
-        printf '\033[34m[server]\033[0m %s\n' "$line"
-      done &
-      server_pid=$!
+        server 2>&1 | while IFS= read -r line; do
+          printf '\033[34m[server]\033[0m %s\n' "$line"
+        done &
+        server_pid=$!
 
-      cat ./ready.fifo >/dev/null
+        cat ./ready.fifo >/dev/null
 
-      echo "http://localhost:8080/" > "$PWD/var/netero/browser/1/tab/1/url.txt"
+        echo "http://localhost:8080/" > "$PWD/var/netero/browser/1/tab/1/url.txt"
 
-      bash -euo pipefail ${testFile} 2>&1 | while IFS= read -r line; do
-        printf '\033[33m[client]\033[0m %s\n' "$line"
-      done
+        bash -euo pipefail ${testFile} 2>&1 | while IFS= read -r line; do
+          printf '\033[33m[client]\033[0m %s\n' "$line"
+        done
 
-      echo >./exit.fifo
-      wait $server_pid
-      mkdir $out
-    '';
+        echo >./exit.fifo
+        wait $server_pid
+        mkdir $out
+      '';
 
-  test = testFile:
+  test =
+    testFile:
     pkgs.runCommandLocal ""
       {
-        buildInputs = [ pkgs.netero-test pkgs.jq ];
-      } ''
-      mkdir ./var
-      export NETERO_STATE="$PWD/var/netero"
-      netero_init
+        buildInputs = [
+          pkgs.netero-test
+          pkgs.jq
+        ];
+      }
+      ''
+        mkdir ./var
+        export NETERO_STATE="$PWD/var/netero"
+        netero_init
 
-      bash -euo pipefail ${testFile} 2>&1 | while IFS= read -r line; do
-        printf '\033[33m[client]\033[0m %s\n' "$line"
-      done
-      mkdir $out
-    '';
+        bash -euo pipefail ${testFile} 2>&1 | while IFS= read -r line; do
+          printf '\033[33m[client]\033[0m %s\n' "$line"
+        done
+        mkdir $out
+      '';
 
   testFiles = {
     button-outside-form = serverTest ./server.ts ./button-outside-form.sh;
@@ -115,11 +122,9 @@ let
   };
 
 in
-lib.mapAttrs'
-  (name: value: {
+lib.mapAttrs' (name: value: {
+  name = "submit-test-" + name;
+  value = value.overrideAttrs (oldAttrs: {
     name = "submit-test-" + name;
-    value = value.overrideAttrs (oldAttrs: {
-      name = "submit-test-" + name;
-    });
-  })
-  testFiles
+  });
+}) testFiles

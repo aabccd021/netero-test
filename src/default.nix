@@ -1,15 +1,17 @@
 { pkgs }:
 let
 
-  basicScript = name: scriptPath: pkgs.writeShellApplication {
-    name = name;
-    text = builtins.readFile scriptPath;
-    runtimeInputs = [
-      pkgs.jq
-      pkgs.curl
-      pkgs.xidel
-    ];
-  };
+  basicScript =
+    name: scriptPath:
+    pkgs.writeShellApplication {
+      name = name;
+      text = builtins.readFile scriptPath;
+      runtimeInputs = [
+        pkgs.jq
+        pkgs.curl
+        pkgs.xidel
+      ];
+    };
 
 in
 
