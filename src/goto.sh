@@ -208,7 +208,7 @@ curl_options=" \
   --cookie $browser_state/cookie.txt \
   --cookie-jar $browser_state/cookie.txt \
   --output $tab_state/body \
-  --write-out \"%output{$tab_state/url.txt}%{url_effective}%output{./header.json}%{header_json}%output{$tab_state/response.json}%{json}\" \
+  --write-out \"%output{$tab_state/url.txt}%{url_effective}%output{$tab_state/headers.json}%{header_json}%output{$tab_state/response.json}%{json}\" \
   --compressed \
   --show-error \
   --silent \
@@ -231,7 +231,7 @@ fi
 
 eval "curl $curl_options '$url'"
 
-content_type=$(jq -r '.["content-type"][0]' ./header.json)
+content_type=$(jq -r '.["content-type"][0]' "$tab_state/headers.json")
 if [ "$content_type" = "text/html" ]; then
   cp "$tab_state/body" "$tab_state/page.html"
 elif [ -f "$tab_state/page.html" ]; then
