@@ -220,9 +220,9 @@ if [ -f "$tab_state/url.txt" ]; then
 
   current_host=$(url-parser --url "$current_url" scheme)://$(url-parser --url "$current_url" host)
 
-  port=$(url-parser --url "$current_url" port)
-  if [ -n "$port" ]; then
-    current_host="$current_host:$port"
+  current_url_port=$(url-parser --url "$current_url" port)
+  if [ -n "$current_url_port" ]; then
+    current_host="$current_host:$current_url_port"
   fi
 
   curl_options="$curl_options \
