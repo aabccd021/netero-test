@@ -217,7 +217,14 @@ curl_options=" \
 
 if [ -f "$tab_state/url.txt" ]; then
   current_url=$(cat "$tab_state/url.txt")
-  current_host=$(echo "$current_url" | cut -d/ -f1-3)
+
+  current_host=$(url-parser --url "$current_url" scheme)://$(url-parser --url "$current_url" host)
+
+  port=$(url-parser --url "$current_url" port)
+  if [ -n "$port" ]; then
+    current_host="$current_host:$port"
+  fi
+
   curl_options="$curl_options \
     --referer '$current_url' \
     --header 'Origin: $current_host' \

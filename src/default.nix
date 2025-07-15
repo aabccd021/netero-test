@@ -10,6 +10,7 @@ let
         pkgs.jq
         pkgs.curl
         pkgs.xidel
+        pkgs.url-parser
       ];
     };
 
