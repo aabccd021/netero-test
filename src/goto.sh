@@ -204,9 +204,18 @@ EOF
 
 fi
 
+url_host=$(url-parser --url "$url" host)
+host_header="$url_host"
+
+url_port=$(url-parser --url "$url" port)
+if [ -n "$url_port" ]; then
+  host_header="$host_header:$url_port"
+fi
+
 curl_options=" \
-  --cookie $browser_state/cookie.txt \
-  --cookie-jar $browser_state/cookie.txt \
+  --header 'Host: $host_header' \
+  --cookie $browser_state/sites/$url_host/cookie.txt \
+  --cookie-jar $browser_state/sites/$url_host/cookie.txt \
   --output $tab_state/body \
   --write-out \"%output{$tab_state/url.txt}%{url_effective}%output{$tab_state/headers.json}%{header_json}%output{$tab_state/response.json}%{json}\" \
   --compressed \
