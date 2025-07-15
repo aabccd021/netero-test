@@ -6,10 +6,7 @@ let
     pkgs.writeShellApplication {
       name = name;
       text = builtins.readFile scriptPath;
-      checkPhase = ''
-        runHook preCheck
-        runHook postCheck
-      '';
+      checkPhase = "";
       runtimeInputs = [
         pkgs.jq
         pkgs.curl
