@@ -204,26 +204,6 @@ EOF
 
 fi
 
-url_host=$(url-parser --url "$url" host)
-host_header="$url_host"
-
-url_port=$(url-parser --url "$url" port)
-if [ -n "$url_port" ]; then
-  host_header="$host_header:$url_port"
-fi
-
-curl_options=" \
-  --header 'Host: $host_header' \
-  --cookie $browser_state/sites/$url_host/cookie.txt \
-  --cookie-jar $browser_state/sites/$url_host/cookie.txt \
-  --output $tab_state/body \
-  --write-out \"%output{$tab_state/url.txt}%{url_effective}%output{$tab_state/headers.json}%{header_json}%output{$tab_state/response.json}%{json}\" \
-  --compressed \
-  --show-error \
-  --silent \
-  --location \
-"
-
 if [ -f "$tab_state/url.txt" ]; then
   current_url=$(cat "$tab_state/url.txt")
 
@@ -252,6 +232,26 @@ if [ -f "$NETERO_STATE/host-resolver.txt" ]; then
     url=$(echo "$url" | sed "s|$url_host|$resolved_host|")
   fi
 fi
+
+url_host=$(url-parser --url "$url" host)
+host_header="$url_host"
+
+url_port=$(url-parser --url "$url" port)
+if [ -n "$url_port" ]; then
+  host_header="$host_header:$url_port"
+fi
+
+curl_options=" \
+  --header 'Host: $host_header' \
+  --cookie $browser_state/sites/$url_host/cookie.txt \
+  --cookie-jar $browser_state/sites/$url_host/cookie.txt \
+  --output $tab_state/body \
+  --write-out \"%output{$tab_state/url.txt}%{url_effective}%output{$tab_state/headers.json}%{header_json}%output{$tab_state/response.json}%{json}\" \
+  --compressed \
+  --show-error \
+  --silent \
+  --location \
+"
 
 eval "curl $curl_options '$url'"
 
