@@ -6,6 +6,14 @@ let
     pkgs.writeShellApplication {
       name = name;
       text = builtins.readFile scriptPath;
+      bashOptions = [
+        "errexit"
+        "nounset"
+      ];
+      extraShellCheckFlags = [
+        "--shell"
+        "sh"
+      ];
       runtimeInputs = [
         pkgs.jq
         pkgs.curl

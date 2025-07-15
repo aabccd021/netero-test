@@ -249,7 +249,6 @@ if [ -f "$NETERO_STATE/host-resolver.txt" ]; then
   url_host=$(url-parser --url "$url" host)
   resolved_host=$(grep "^$url_host " "$NETERO_STATE/host-resolver.txt" | awk '{print $2}')
   if [ -n "$resolved_host" ]; then
-    # shellcheck disable=SC2001
     url=$(echo "$url" | sed "s|$url_host|$resolved_host|")
   fi
 fi
