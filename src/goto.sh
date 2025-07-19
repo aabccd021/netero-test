@@ -204,6 +204,8 @@ EOF
 
 fi
 
+curl_options=""
+
 if [ -f "$tab_state/url.txt" ]; then
   current_url=$(cat "$tab_state/url.txt")
 
@@ -241,7 +243,7 @@ if [ -n "$url_port" ]; then
   host_header="$host_header:$url_port"
 fi
 
-curl_options=" \
+curl_options="$curl_options \
   --header 'Host: $host_header' \
   --cookie $browser_state/sites/$url_host/cookie.txt \
   --cookie-jar $browser_state/sites/$url_host/cookie.txt \
