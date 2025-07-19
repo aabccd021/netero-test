@@ -204,18 +204,20 @@ EOF
 
 fi
 
-curl_options=""
+curl_options=" \
+  --cookie $browser_state/cookie.txt \
+  --cookie-jar $browser_state/cookie.txt \
+  --output $tab_state/body \
+  --write-out \"%output{$tab_state/url.txt}%{url_effective}%output{$tab_state/headers.json}%{header_json}%output{$tab_state/response.json}%{json}\" \
+  --compressed \
+  --show-error \
+  --silent \
+  --location \
+"
 
 if [ -f "$tab_state/url.txt" ]; then
   current_url=$(cat "$tab_state/url.txt")
-
-  current_host=$(url-parser --url "$current_url" scheme)://$(url-parser --url "$current_url" host)
-
-  current_url_port=$(url-parser --url "$current_url" port)
-  if [ -n "$current_url_port" ]; then
-    current_host="$current_host:$current_url_port"
-  fi
-
+  current_host=$(echo "$current_url" | cut -d/ -f1-3)
   curl_options="$curl_options \
     --referer '$current_url' \
     --header 'Origin: $current_host' \
@@ -226,34 +228,6 @@ if [ -f "$tab_state/url.txt" ]; then
   fi
 
 fi
-
-if [ -f "$NETERO_STATE/host-resolver.txt" ]; then
-  url_host=$(url-parser --url "$url" host)
-  resolved_host=$(grep "^$url_host " "$NETERO_STATE/host-resolver.txt" | awk '{print $2}')
-  if [ -n "$resolved_host" ]; then
-    url=$(echo "$url" | sed "s|$url_host|$resolved_host|")
-  fi
-fi
-
-url_host=$(url-parser --url "$url" host)
-host_header="$url_host"
-
-url_port=$(url-parser --url "$url" port)
-if [ -n "$url_port" ]; then
-  host_header="$host_header:$url_port"
-fi
-
-curl_options="$curl_options \
-  --header 'Host: $host_header' \
-  --cookie $browser_state/sites/$url_host/cookie.txt \
-  --cookie-jar $browser_state/sites/$url_host/cookie.txt \
-  --output $tab_state/body \
-  --write-out \"%output{$tab_state/url.txt}%{url_effective}%output{$tab_state/headers.json}%{header_json}%output{$tab_state/response.json}%{json}\" \
-  --compressed \
-  --show-error \
-  --silent \
-  --location \
-"
 
 eval "curl $curl_options '$url'"
 

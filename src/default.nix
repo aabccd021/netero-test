@@ -6,12 +6,10 @@ let
     pkgs.writeShellApplication {
       name = name;
       text = builtins.readFile scriptPath;
-      checkPhase = "";
       runtimeInputs = [
         pkgs.jq
         pkgs.curl
         pkgs.xidel
-        pkgs.url-parser
       ];
     };
 
