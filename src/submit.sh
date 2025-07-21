@@ -211,7 +211,10 @@ for input_name in $input_els; do
     if [ -z "$data" ]; then
       echo "Error: Invalid radio value" >&2
       echo "Input name: $input_name" >&2
-      echo "Actual value: $(cat "$data_path")" >&2
+      echo >&2
+      echo "Actual value:" >&2
+      cat "$data_path" >&2
+      echo >&2
       echo "Expected values:" >&2
       echo "$valid_values" >&2
       exit 1

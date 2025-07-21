@@ -21,7 +21,9 @@ fi
 cat >expected.txt <<EOF
 Error: Invalid radio value
 Input name: theme
-Actual value: system
+
+Actual value:
+system
 Expected values:
 dark
 light
