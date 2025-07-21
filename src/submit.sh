@@ -216,6 +216,30 @@ for input_name in $input_els; do
       echo "$valid_values" >&2
       exit 1
     fi
+  elif [ "$input_type" = "checkbox" ]; then
+    if [ -n "$data_path" ]; then
+      checkbox_value=$(cat "$data_path")
+      if [ "$checkbox_value" = "true" ] || [ "$checkbox_value" = "1" ] || [ "$checkbox_value" = "yes" ]; then
+        checkbox_val=$(echo "$input_el" | xidel -e '//input/@value')
+        if [ -z "$checkbox_val" ]; then
+          checkbox_val="on"
+        fi
+        tmpfile=$(mktemp)
+        printf "%s" "$checkbox_val" >"$tmpfile"
+        data="<$tmpfile"
+        form_data="$form_data $input_name=$data"
+      fi
+    elif echo "$input_el" | xidel -e "//input/@*/name()" | grep -q "\bchecked\b"; then
+      checkbox_val=$(echo "$input_el" | xidel -e '//input/@value')
+      if [ -z "$checkbox_val" ]; then
+        checkbox_val="on"
+      fi
+      tmpfile=$(mktemp)
+      printf "%s" "$checkbox_val" >"$tmpfile"
+      data="<$tmpfile"
+      form_data="$form_data $input_name=$data"
+    fi
+    continue
   elif [ "$input_type" = "file" ]; then
     if [ "$enc_type" = "multipart/form-data" ]; then
       if [ -z "$data_path" ]; then
