@@ -192,10 +192,11 @@ for input_name in $input_els; do
   validate_element "input" "$input_name" "$input_el" "$data_path"
 
   input_type=$(echo "$input_el" | xidel -e '//input/@type' | uniq)
-  if [ "$input_type" = "text" ] || [ "$input_type" = "password" ] || [ "$input_type" = "url" ]; then
-    if [ "$input_type" = "url" ]; then
-      echo "Warning: URL input type is not validated." >&2
-    fi
+  if [ "$input_type" = "text" ] || [ "$input_type" = "password" ]; then
+    validate_text "input" "$input_name" "$input_el" "$data_path"
+    data="<$data_path"
+  elif [ "$input_type" = "url" ] || [ "$input_type" = "email" ]; then
+    echo "Warning: URL input type is not validated." >&2
     validate_text "input" "$input_name" "$input_el" "$data_path"
     data="<$data_path"
   elif [ "$input_type" = "radio" ]; then
