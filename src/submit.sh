@@ -196,7 +196,7 @@ for input_name in $input_els; do
     validate_text "input" "$input_name" "$input_el" "$data_path"
     data="<$data_path"
   elif [ "$input_type" = "url" ] || [ "$input_type" = "email" ]; then
-    echo "Warning: URL input type is not validated." >&2
+    echo "Warning: Input type '$input_type' is not fully validated." >&2
     validate_text "input" "$input_name" "$input_el" "$data_path"
     data="<$data_path"
   elif [ "$input_type" = "radio" ]; then
