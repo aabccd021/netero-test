@@ -26,7 +26,7 @@ let
       ''
         mkdir ./var
         export NETERO_STATE="$PWD/var/netero"
-        netero_init
+        netero-init
 
         mkfifo ./ready.fifo
         mkfifo ./exit.fifo

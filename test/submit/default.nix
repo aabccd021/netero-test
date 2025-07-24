@@ -27,7 +27,7 @@ let
       ''
         mkdir ./var
         export NETERO_STATE="$PWD/var/netero"
-        netero_init
+        netero-init
         mkfifo ./ready.fifo
         mkfifo ./exit.fifo
 
@@ -61,7 +61,7 @@ let
       ''
         mkdir ./var
         export NETERO_STATE="$PWD/var/netero"
-        netero_init
+        netero-init
 
         bash -euo pipefail ${testFile} 2>&1 | while IFS= read -r line; do
           printf '\033[33m[client]\033[0m %s\n' "$line"
