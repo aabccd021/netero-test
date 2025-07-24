@@ -2,7 +2,7 @@ prefix=${1:-}
 actual=${2:-}
 
 if [ -z "$prefix" ] || [ -z "$actual" ]; then
-  echo "Usage: assert_starts_with <prefix> <actual>"
+  echo "Usage: assert-starts-with <prefix> <actual>"
   exit 1
 fi
 

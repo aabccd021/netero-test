@@ -5,7 +5,7 @@ queryStr=${1:-}
 expectedLine=${2:-}
 
 if [ -z "$expectedLine" ] || [ -z "$queryStr" ]; then
-  echo "Usage: assert_query_returns_with_line <expectedLine> <queryStr>"
+  echo "Usage: assert-query-returns-with-line <expectedLine> <queryStr>"
   exit 1
 fi
 

@@ -4,7 +4,7 @@ tab_state="$browser_state/tab/$(cat "$NETERO_STATE/active-tab.txt")"
 expected=${1:-}
 
 if [ -z "$expected" ]; then
-  echo "Usage: assert_url_equal <expected>"
+  echo "Usage: assert-url-equal <expected>"
   exit 1
 fi
 

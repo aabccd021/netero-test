@@ -4,7 +4,7 @@ tab_state="$browser_state/tab/$(cat "$NETERO_STATE/active-tab.txt")"
 prefix=${1:-}
 
 if [ -z "$prefix" ]; then
-  echo "Usage: assert_url_starts_with <prefix>"
+  echo "Usage: assert-url-starts-with <prefix>"
   exit 1
 fi
 

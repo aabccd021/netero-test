@@ -2,7 +2,7 @@ expected=${1:-}
 actual=${2:-}
 
 if [ -z "$expected" ]; then
-  echo "Usage: assert_equal <expected> <actual>"
+  echo "Usage: assert-equal <expected> <actual>"
   exit 1
 fi
 
