@@ -354,7 +354,7 @@ eval "curl $curl_options '$url'"
 
 content_type=$(jq -r '.["content-type"][0]' "$tab_state/headers.json")
 if [ "$content_type" = "text/html" ]; then
-  cp "$tab_state/body" "$tab_state/page.html"
+  mv "$tab_state/body" "$tab_state/page.html"
 elif [ -f "$tab_state/page.html" ]; then
   rm "$tab_state/page.html"
 fi
