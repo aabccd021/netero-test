@@ -1,27 +1,22 @@
 browser_state="$NETERO_STATE/browser/$(cat "$NETERO_STATE/active-browser.txt")"
 tab_state="$browser_state/tab/$(cat "$NETERO_STATE/active-tab.txt")"
 
-prefix=${1:-}
+regex=${1:-}
 
-if [ -z "$prefix" ]; then
-  echo "Usage: assert-url-starts-with <prefix>"
+if [ -z "$regex" ]; then
+  echo "Usage: assert-url-regex <regex>"
   exit 1
 fi
 
 actual="$(cat "$tab_state/url.txt")"
 
-case "$actual" in
-"$prefix"*)
-  exit 0
-  ;;
-*)
-  echo "Assertion error: string does not start with prefix"
+if ! echo "$actual" | grep -Eq "$regex"; then
+  echo "Assertion error: string does not match regex"
   echo
-  echo "prefix expected:"
-  echo "$prefix"
+  echo "regex expected:"
+  echo "$regex"
   echo
   echo "string:"
   echo "$actual"
   exit 1
-  ;;
-esac
+fi
