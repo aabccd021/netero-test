@@ -13,17 +13,11 @@ let
       ];
     };
 
-  lib = pkgs.runCommand "netero-test-lib" { } ''
-    mkdir --parent "$out/lib"
-    ${pkgs.gcc_multi}/bin/gcc -shared -fPIC -o "$out/lib/libmocktime.so" ${./mocktime.c} -ldl
-  '';
-
 in
 
 pkgs.symlinkJoin {
   name = "netero-test";
   paths = [
-    lib
     (basicScript "assert-equal" ./assert-equal.sh)
     (basicScript "assert-header-equal" ./assert-header-equal.sh)
     (basicScript "assert-page-contains-text" ./assert-page-contains-text.sh)
