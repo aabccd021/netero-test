@@ -5,97 +5,51 @@
 #include <time.h>
 #include <errno.h>
 #include <sys/time.h>
-#include <string.h>
 
-static int read_time_from_file(time_t *t_out) {
-    if (!t_out) {
-        errno = EINVAL;
-        return 0;
-    }
-
+time_t read_time_from_file() {
     const char *netero_state = getenv("NETERO_STATE");
     if (!netero_state) {
-        errno = ENOENT;
-        return 0;
+        fprintf(stderr, "NETERO_STATE environment variable is not set\n");
+        exit(1);
     }
 
     char path[PATH_MAX];
-    if (snprintf(path, sizeof(path), "%s/now.txt", netero_state) >= (int)sizeof(path)) {
-        errno = ENAMETOOLONG;
-        return 0;
-    }
+    snprintf(path, sizeof(path), "%s/now.txt", netero_state);
 
     FILE *f = fopen(path, "r");
     if (!f) {
-        return 0;
+        fprintf(stderr, "Failed to open %s\n", path);
+        exit(1);
     }
 
-    char buf[64];
-    if (!fgets(buf, sizeof(buf), f)) {
+    time_t t = 0;
+    if (fscanf(f, "%ld", &t) != 1) {
+        fprintf(stderr, "Failed to read time value from %s\n", path);
         fclose(f);
-        errno = EIO;
-        return 0;
+        exit(1);
     }
     fclose(f);
-
-    char *endptr;
-    errno = 0;
-    long long val = strtoll(buf, &endptr, 10);
-    if (errno != 0 || endptr == buf || (*endptr && *endptr != '\n')) {
-        errno = EINVAL;
-        return 0;
-    }
-
-    *t_out = (time_t)val;
-    return 1;
+    return t;
 }
 
 time_t time(time_t *tloc) {
-    time_t t = (time_t)-1;
-    if (!read_time_from_file(&t)) {
-        // errno already set
-        return (time_t)-1;
+    time_t t = read_time_from_file();
+    if (tloc) {
+      *tloc = t;
     }
-    if (tloc)
-        *tloc = t;
     return t;
 }
 
 int gettimeofday(struct timeval *tv, void *tz) {
-    if (!tv) {
-        errno = EINVAL;
-        return -1;
+    time_t t = read_time_from_file();
+    if (tv) {
+        tv->tv_sec = t;
+        tv->tv_usec = 0;
     }
-    time_t t;
-    if (!read_time_from_file(&t)) {
-        // errno already set
-        return -1;
-    }
-    tv->tv_sec = t;
-    tv->tv_usec = 0;
     if (tz) {
         struct timezone *ptz = (struct timezone *)tz;
         ptz->tz_minuteswest = 0;
         ptz->tz_dsttime = 0;
     }
-    return 0;
-}
-
-int clock_gettime(clockid_t clk_id, struct timespec *ts) {
-    if (!ts) {
-        errno = EINVAL;
-        return -1;
-    }
-    if (clk_id != CLOCK_REALTIME) {
-        errno = EINVAL;
-        return -1;
-    }
-    time_t t;
-    if (!read_time_from_file(&t)) {
-        // errno already set
-        return -1;
-    }
-    ts->tv_sec = t;
-    ts->tv_nsec = 0;
     return 0;
 }
