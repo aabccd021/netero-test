@@ -60,13 +60,17 @@ int clock_gettime(clockid_t clk_id, struct timespec *tp) {
         return -1;
     }
 
-    if (clk_id == CLOCK_REALTIME || clk_id == CLOCK_MONOTONIC) {
-        time_t t = read_time_from_file();
-        tp->tv_sec = t;
-        tp->tv_nsec = 0;
-        return 0;
-    } else {
-        errno = EINVAL;
-        return -1;
+    switch (clk_id) {
+        case CLOCK_REALTIME:
+        case CLOCK_MONOTONIC:
+            {
+                time_t t = read_time_from_file();
+                tp->tv_sec = t;
+                tp->tv_nsec = 0;
+                return 0;
+            }
+        default:
+            errno = EINVAL;
+            return -1;
     }
 }
