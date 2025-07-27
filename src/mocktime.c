@@ -5,45 +5,74 @@
 #include <time.h>
 #include <errno.h>
 #include <sys/time.h>
+#include <string.h>
 
-time_t read_time_from_file() {
+static int read_time_from_file(time_t *t_out) {
+    if (!t_out) {
+        errno = EINVAL;
+        return 0;
+    }
+
     const char *netero_state = getenv("NETERO_STATE");
     if (!netero_state) {
-        fprintf(stderr, "NETERO_STATE environment variable is not set\n");
-        exit(1);
+        errno = ENOENT;
+        return 0;
     }
 
     char path[PATH_MAX];
-    snprintf(path, sizeof(path), "%s/now.txt", netero_state);
+    if (snprintf(path, sizeof(path), "%s/now.txt", netero_state) >= (int)sizeof(path)) {
+        errno = ENAMETOOLONG;
+        return 0;
+    }
 
     FILE *f = fopen(path, "r");
     if (!f) {
-        fprintf(stderr, "Failed to open %s\n", path);
-        exit(1);
+        return 0;
     }
 
-    time_t t = 0;
-    if (fscanf(f, "%ld", &t) != 1) {
-        fprintf(stderr, "Failed to read time value from %s\n", path);
+    char buf[64];
+    if (!fgets(buf, sizeof(buf), f)) {
         fclose(f);
-        exit(1);
+        errno = EIO;
+        return 0;
     }
     fclose(f);
-    return t;
+
+    char *endptr;
+    errno = 0;
+    long long val = strtoll(buf, &endptr, 10);
+    if (errno != 0 || endptr == buf || (*endptr && *endptr != '\n')) {
+        errno = EINVAL;
+        return 0;
+    }
+
+    *t_out = (time_t)val;
+    return 1;
 }
 
 time_t time(time_t *tloc) {
-    time_t t = read_time_from_file();
-    if (tloc) *tloc = t;
+    time_t t = (time_t)-1;
+    if (!read_time_from_file(&t)) {
+        // errno already set
+        return (time_t)-1;
+    }
+    if (tloc)
+        *tloc = t;
     return t;
 }
 
 int gettimeofday(struct timeval *tv, void *tz) {
-    time_t t = read_time_from_file();
-    if (tv) {
-        tv->tv_sec = t;
-        tv->tv_usec = 0;
+    if (!tv) {
+        errno = EINVAL;
+        return -1;
     }
+    time_t t;
+    if (!read_time_from_file(&t)) {
+        // errno already set
+        return -1;
+    }
+    tv->tv_sec = t;
+    tv->tv_usec = 0;
     if (tz) {
         struct timezone *ptz = (struct timezone *)tz;
         ptz->tz_minuteswest = 0;
@@ -52,41 +81,21 @@ int gettimeofday(struct timeval *tv, void *tz) {
     return 0;
 }
 
-int cloc_gettime(clockid_t clk_id, struct timespec *ts) {
+int clock_gettime(clockid_t clk_id, struct timespec *ts) {
     if (!ts) {
         errno = EINVAL;
         return -1;
     }
-
     if (clk_id != CLOCK_REALTIME) {
         errno = EINVAL;
         return -1;
     }
-
-    const char *netero_state = getenv("NETERO_STATE");
-    if (!netero_state) {
-        errno = ENOENT;
+    time_t t;
+    if (!read_time_from_file(&t)) {
+        // errno already set
         return -1;
     }
-
-    char path[PATH_MAX];
-    snprintf(path, sizeof(path), "%s/now.txt", netero_state);
-
-    FILE *f = fopen(path, "r");
-    if (!f) {
-        errno = ENOENT;
-        return -1;
-    }
-
-    long long t = 0;
-    if (fscanf(f, "%lld", &t) != 1) {
-        fclose(f);
-        errno = EIO;
-        return -1;
-    }
-    fclose(f);
-
-    ts->tv_sec = (time_t)t;
+    ts->tv_sec = t;
     ts->tv_nsec = 0;
     return 0;
 }
