@@ -4,45 +4,38 @@
 #include <stdio.h>
 #include <time.h>
 #include <errno.h>
-#include <string.h>
 #include <sys/time.h>
 
-static time_t read_time_from_file(void) {
+time_t read_time_from_file() {
     const char *netero_state = getenv("NETERO_STATE");
     if (!netero_state) {
         fprintf(stderr, "NETERO_STATE environment variable is not set\n");
-        exit(EXIT_FAILURE);
+        exit(1);
     }
 
-    char *path = NULL;
-    if (asprintf(&path, "%s/now.txt", netero_state) == -1 || !path) {
-        fprintf(stderr, "Failed to allocate memory for path: %s\n", strerror(errno));
-        exit(EXIT_FAILURE);
-    }
+    char path[PATH_MAX];
+    snprintf(path, sizeof(path), "%s/now.txt", netero_state);
 
     FILE *f = fopen(path, "r");
     if (!f) {
-        fprintf(stderr, "Failed to open %s: %s (errno: %d)\n", path, strerror(errno), errno);
-        free(path);
-        exit(EXIT_FAILURE);
+        fprintf(stderr, "Failed to open %s\n", path);
+        exit(1);
     }
 
     time_t t = 0;
     if (fscanf(f, "%ld", &t) != 1) {
-        fprintf(stderr, "Failed to read time value from %s: %s (errno: %d)\n", path, strerror(errno), errno);
+        fprintf(stderr, "Failed to read time value from %s\n", path);
         fclose(f);
-        free(path);
-        exit(EXIT_FAILURE);
+        exit(1);
     }
     fclose(f);
-    free(path);
     return t;
 }
 
 time_t time(time_t *tloc) {
     time_t t = read_time_from_file();
     if (tloc) {
-        *tloc = t;
+      *tloc = t;
     }
     return t;
 }
@@ -52,6 +45,11 @@ int gettimeofday(struct timeval *tv, void *tz) {
     if (tv) {
         tv->tv_sec = t;
         tv->tv_usec = 0;
+    }
+    if (tz) {
+        struct timezone *ptz = (struct timezone *)tz;
+        ptz->tz_minuteswest = 0;
+        ptz->tz_dsttime = 0;
     }
     return 0;
 }
