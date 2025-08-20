@@ -346,6 +346,8 @@ if [ -f "$tab_state/url.txt" ]; then
 
   if echo "$url" | grep -q "^/"; then
     url="$current_host$url"
+  elif echo "$url" | grep -q "^?"; then
+    url="$current_url$url"
   fi
 
 fi
