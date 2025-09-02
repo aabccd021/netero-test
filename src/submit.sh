@@ -79,26 +79,6 @@ if [ -z "$form_query" ]; then
   exit 1
 fi
 
-submit_button_query=""
-data_str=""
-while [ $# -gt 0 ]; do
-  case $1 in
-  --submit-button)
-    submit_button_query=${2:-}
-    shift
-    ;;
-  --data)
-    data_str=$(printf "%s\n%s" "$data_str" "$2")
-    shift
-    ;;
-  *)
-    echo "Error: Unknown flag $1" >&2
-    exit 1
-    ;;
-  esac
-  shift
-done
-
 form_el=$(xidel "$tab_state/page.html" -e "$form_query" --html)
 form_count=$(echo "$form_el" | xidel -e "count(//form)")
 if [ "$form_count" -eq 0 ]; then
@@ -112,6 +92,53 @@ if [ "$form_count" -gt 1 ]; then
   echo "Please make the form query more specific." >&2
   exit 1
 fi
+
+form_data=""
+
+submit_button_query=""
+data_str=""
+while [ $# -gt 0 ]; do
+  case $1 in
+  --submit-button)
+    shift
+    submit_button_query=${1:-}
+    ;;
+  --data)
+    shift
+    data_str=$(printf "%s\n%s" "$data_str" "$1")
+    ;;
+  --checkbox-inside-form)
+    shift
+    checkbox_query=${1:-}
+    if [ -z "$checkbox_query" ]; then
+      echo "Error: Missing checkbox query" >&2
+      exit 1
+    fi
+    checkbox_el=$(echo "$form_el" | xidel -e "$checkbox_query" --html)
+    checkbox_count=$(echo "$checkbox_el" | xidel -e "count(/*)")
+    if [ "$checkbox_count" -eq 0 ]; then
+      echo "Error: Checkbox not found" >&2
+      echo "Query: $checkbox_query" >&2
+      exit 1
+    fi
+    if [ "$checkbox_count" -gt 1 ]; then
+      echo "Error: Multiple checkboxes found." >&2
+      echo "Please make the checkbox query more specific." >&2
+      exit 1
+    fi
+    checkbox_value=$(echo "$checkbox_el" | xidel -e '//input/@value')
+    checkbox_name=$(echo "$checkbox_el" | xidel -e '//input/@name')
+    tmpfile=$(mktemp)
+    printf "%s" "$checkbox_value" >"$tmpfile"
+    form_data="$form_data $checkbox_name=<$tmpfile"
+    ;;
+  *)
+    echo "Error: Unknown flag $1" >&2
+    exit 1
+    ;;
+  esac
+  shift
+done
 
 form_id=$(echo "$form_el" | xidel -e '//form/@id')
 
@@ -139,8 +166,6 @@ if [ "$enc_type" != "application/x-www-form-urlencoded" ] &&
   enc_type="application/x-www-form-urlencoded"
 fi
 curl_options="$curl_options --header 'Content-Type: $enc_type'"
-
-form_data=""
 
 if [ -n "$submit_button_query" ]; then
   submit_button_el=$(xidel "$tab_state/page.html" -e "$submit_button_query" --html)
