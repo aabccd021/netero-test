@@ -2,10 +2,7 @@ browser_state="$NETERO_STATE/browser/$(cat "$NETERO_STATE/active-browser.txt")"
 tab_state="$browser_state/tab/$(cat "$NETERO_STATE/active-tab.txt")"
 mkdir -p "$tab_state"
 
-# Multiple files from single input is not supported
-# -F 'file=@/path/to/your/file1.txt' \
-# -F 'file=@/path/to/your/file2.jpg' \
-validate_element() {
+validate_required() {
   el_type="$1"
   el_name="$2"
   el_html="$3"
@@ -17,6 +14,18 @@ validate_element() {
     echo "Error: Missing required $el_type: $el_name" >&2
     exit 1
   fi
+}
+
+# Multiple files from single input is not supported
+# -F 'file=@/path/to/your/file1.txt' \
+# -F 'file=@/path/to/your/file2.jpg' \
+validate_element() {
+  el_type="$1"
+  el_name="$2"
+  el_html="$3"
+  data_path="$4"
+
+  attrnames=$(echo "$el_html" | xidel -e "//$el_type/@*/name()")
 
   if echo "$attrnames" | grep -q "\bdisabled\b" && [ -n "$data_path" ]; then
     echo "Error: Disabled $el_type: $el_name" >&2
@@ -216,6 +225,8 @@ for input_name in $input_els; do
       data_path="$tmpfile"
     fi
   fi
+
+  validate_required "input" "$input_name" "$input_el" "$data_path"
 
   input_type=$(echo "$input_el" | xidel -e '//input/@type' | uniq)
   if [ "$input_type" = "text" ] || [ "$input_type" = "password" ]; then
