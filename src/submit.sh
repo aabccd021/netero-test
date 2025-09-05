@@ -215,6 +215,11 @@ for input_name in $input_els; do
 
   validate_element "input" "$input_name" "$input_el" "$data_path"
 
+  attrnames=$(echo "$input_el" | xidel -e "//input/@*/name()")
+  if echo "$attrnames" | grep -q "\bdisabled\b"; then
+    continue
+  fi
+
   if [ -z "$data_path" ]; then
     # if value attribute exists
     attrnames=$(echo "$input_el" | xidel -e "//input/@*/name()")

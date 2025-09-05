@@ -8,7 +8,9 @@ cat >"$tab_state/page.html" <<EOF
 </form>
 EOF
 
-printf "foo" >expected.txt
 submit "//form"
 
-diff --unified --color=always ./expected.txt ./received/loremInput
+if [ -f ./received/loremInput ]; then
+  echo "Error: Expected no submission, but received/loremInput exists"
+  exit 1
+fi
