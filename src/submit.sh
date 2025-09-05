@@ -232,7 +232,7 @@ for input_name in $input_els; do
   if [ "$input_type" = "text" ] || [ "$input_type" = "password" ]; then
     validate_text "input" "$input_name" "$input_el" "$data_path"
     data="<$data_path"
-  elif [ "$input_type" = "url" ] || [ "$input_type" = "email" ]; then
+  elif [ "$input_type" = "url" ] || [ "$input_type" = "email" ] || [ "$input_type" = "number" ]; then
     echo "Warning: Input type '$input_type' is not fully validated." >&2
     validate_text "input" "$input_name" "$input_el" "$data_path"
     data="<$data_path"
