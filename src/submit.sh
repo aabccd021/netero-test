@@ -203,6 +203,9 @@ for input_name in $input_els; do
   input_el=$(echo "$form_el" | xidel -e "//form//input[@name='$input_name']" --html)
 
   data_path=$(echo "$data_str" | grep "^$input_name=" | cut -d= -f2- || true)
+
+  validate_element "input" "$input_name" "$input_el" "$data_path"
+
   if [ -z "$data_path" ]; then
     # if value attribute exists
     attrnames=$(echo "$input_el" | xidel -e "//input/@*/name()")
@@ -213,8 +216,6 @@ for input_name in $input_els; do
       data_path="$tmpfile"
     fi
   fi
-
-  validate_element "input" "$input_name" "$input_el" "$data_path"
 
   input_type=$(echo "$input_el" | xidel -e '//input/@type' | uniq)
   if [ "$input_type" = "text" ] || [ "$input_type" = "password" ]; then

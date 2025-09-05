@@ -73,6 +73,7 @@ let
     button-outside-form = serverTest ./server.ts ./button-outside-form.sh;
     default-value = serverTest ./server.ts ./default-value.sh;
     disabled = test ./disabled.sh;
+    empty-disabled = serverTest ./server.ts ./empty-disabled.sh;
     file = serverTest ./server.ts ./file.sh;
     file-not-found = test ./file-not-found.sh;
     form-not-found = test ./form-not-found.sh;
