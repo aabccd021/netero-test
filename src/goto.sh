@@ -1,15 +1,27 @@
+browser_idx="$(cat "$NETERO_STATE/active-browser.txt")"
+tab_idx="$(cat "$NETERO_STATE/active-tab.txt")"
+browser_state="$NETERO_STATE/browser/$browser_idx"
+tab_state="$browser_state/tab/$tab_idx"
+
 url=""
 anchor_href=""
 anchor_href_with_text=""
 anchor_href_with_aria_label=""
 img_src=""
 img_src_with_alt=""
-browser_idx="$(cat "$NETERO_STATE/active-browser.txt")"
-tab_idx="$(cat "$NETERO_STATE/active-tab.txt")"
 while [ $# -gt 0 ]; do
   case $1 in
   --url)
     url=$2
+    shift
+    ;;
+  --reload)
+    if [ -f "$tab_state/url.txt" ]; then
+      url=$(cat "$tab_state/url.txt")
+    else
+      echo "Error: No url to reload" >&2
+      exit 1
+    fi
     shift
     ;;
   --anchor-href)
@@ -48,8 +60,6 @@ while [ $# -gt 0 ]; do
   shift
 done
 
-browser_state="$NETERO_STATE/browser/$browser_idx"
-tab_state="$browser_state/tab/$tab_idx"
 mkdir -p "$tab_state"
 
 if [ -n "$anchor_href" ]; then
