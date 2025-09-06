@@ -22,7 +22,6 @@ while [ $# -gt 0 ]; do
       echo "Error: No url to reload" >&2
       exit 1
     fi
-    shift
     ;;
   --anchor-href)
     anchor_href=$2
