@@ -1,6 +1,4 @@
-browser_state="$NETERO_STATE/browser/$(cat "$NETERO_STATE/active-browser.txt")"
-tab_state="$browser_state/tab/$(cat "$NETERO_STATE/active-tab.txt")"
-actual="$tab_state/body"
+actual="$NETERO_STATE/body"
 
 expected=${1:-}
 

@@ -1,6 +1,4 @@
-browser_state="$NETERO_STATE/browser/$(cat "$NETERO_STATE/active-browser.txt")"
-tab_state="$browser_state/tab/$(cat "$NETERO_STATE/active-tab.txt")"
-mkdir -p "$tab_state"
+mkdir -p "$NETERO_STATE"
 
 validate_required() {
   el_type="$1"
@@ -88,7 +86,7 @@ if [ -z "$form_query" ]; then
   exit 1
 fi
 
-form_el=$(xidel "$tab_state/page.html" -e "$form_query" --html)
+form_el=$(xidel "$NETERO_STATE/page.html" -e "$form_query" --html)
 form_count=$(echo "$form_el" | xidel -e "count(//form)")
 if [ "$form_count" -eq 0 ]; then
   echo "Error: Form not found" >&2
@@ -152,8 +150,8 @@ done
 form_id=$(echo "$form_el" | xidel -e '//form/@id')
 
 action=$(echo "$form_el" | xidel -e '//form/@action')
-if [ -z "$action" ] && [ -f "$tab_state/url.txt" ]; then
-  action=$(cat "$tab_state/url.txt")
+if [ -z "$action" ] && [ -f "$NETERO_STATE/url.txt" ]; then
+  action=$(cat "$NETERO_STATE/url.txt")
 fi
 
 if [ -z "$action" ]; then
@@ -177,10 +175,10 @@ fi
 curl_options="$curl_options --header 'Content-Type: $enc_type'"
 
 if [ -n "$submit_button_query" ]; then
-  submit_button_el=$(xidel "$tab_state/page.html" -e "$submit_button_query" --html)
+  submit_button_el=$(xidel "$NETERO_STATE/page.html" -e "$submit_button_query" --html)
 else
   submit_button_el_inside_form=$(echo "$form_el" | xidel -e "//form//button" --html)
-  submit_button_el_outside_form=$(xidel "$tab_state/page.html" --html -e "//button[@form='$form_id']")
+  submit_button_el_outside_form=$(xidel "$NETERO_STATE/page.html" --html -e "//button[@form='$form_id']")
   submit_button_el="$submit_button_el_inside_form $submit_button_el_outside_form"
 fi
 
@@ -366,10 +364,10 @@ elif [ "$method" = "get" ] || [ -z "$method" ]; then
 fi
 
 curl_options="$curl_options \
-  --cookie $browser_state/cookie.txt \
-  --cookie-jar $browser_state/cookie.txt \
-  --output $tab_state/body \
-  --write-out '%output{$tab_state/url.txt}%{url_effective}%output{$tab_state/headers.json}%{header_json}%output{$tab_state/response.json}%{json}' \
+  --cookie $NETERO_STATE/cookie.txt \
+  --cookie-jar $NETERO_STATE/cookie.txt \
+  --output $NETERO_STATE/body \
+  --write-out '%output{$NETERO_STATE/url.txt}%{url_effective}%output{$NETERO_STATE/headers.json}%{header_json}%output{$NETERO_STATE/response.json}%{json}' \
   --compressed \
   --show-error \
   --silent \
@@ -378,8 +376,8 @@ curl_options="$curl_options \
 
 url="$action"
 
-if [ -f "$tab_state/url.txt" ]; then
-  current_url=$(cat "$tab_state/url.txt")
+if [ -f "$NETERO_STATE/url.txt" ]; then
+  current_url=$(cat "$NETERO_STATE/url.txt")
   current_host=$(echo "$current_url" | cut -d/ -f1-3)
   curl_options="$curl_options \
     --referer '$current_url' \
@@ -396,9 +394,9 @@ fi
 
 eval "curl $curl_options '$url'"
 
-content_type=$(jq -r '.["content-type"][0]' "$tab_state/headers.json")
+content_type=$(jq -r '.["content-type"][0]' "$NETERO_STATE/headers.json")
 if [ "$content_type" = "text/html" ]; then
-  mv "$tab_state/body" "$tab_state/page.html"
-elif [ -f "$tab_state/page.html" ]; then
-  rm "$tab_state/page.html"
+  mv "$NETERO_STATE/body" "$NETERO_STATE/page.html"
+elif [ -f "$NETERO_STATE/page.html" ]; then
+  rm "$NETERO_STATE/page.html"
 fi

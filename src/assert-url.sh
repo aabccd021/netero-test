@@ -1,6 +1,3 @@
-browser_state="$NETERO_STATE/browser/$(cat "$NETERO_STATE/active-browser.txt")"
-tab_state="$browser_state/tab/$(cat "$NETERO_STATE/active-tab.txt")"
-
 regex=${1:-}
 
 if [ -z "$regex" ]; then
@@ -8,7 +5,7 @@ if [ -z "$regex" ]; then
   exit 1
 fi
 
-actual="$(cat "$tab_state/url.txt")"
+actual="$(cat "$NETERO_STATE/url.txt")"
 
 if ! echo "$actual" | grep -Eq "$regex"; then
   echo "Assertion error: string does not match regex"

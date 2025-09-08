@@ -1,8 +1,3 @@
-browser_idx="$(cat "$NETERO_STATE/active-browser.txt")"
-tab_idx="$(cat "$NETERO_STATE/active-tab.txt")"
-browser_state="$NETERO_STATE/browser/$browser_idx"
-tab_state="$browser_state/tab/$tab_idx"
-
 url=""
 anchor_href=""
 anchor_href_with_text=""
@@ -16,8 +11,8 @@ while [ $# -gt 0 ]; do
     shift
     ;;
   --reload)
-    if [ -f "$tab_state/url.txt" ]; then
-      url=$(cat "$tab_state/url.txt")
+    if [ -f "$NETERO_STATE/url.txt" ]; then
+      url=$(cat "$NETERO_STATE/url.txt")
     else
       echo "Error: No url to reload" >&2
       exit 1
@@ -43,14 +38,6 @@ while [ $# -gt 0 ]; do
     img_src_with_alt=$2
     shift
     ;;
-  --browser)
-    browser_idx=$2
-    shift
-    ;;
-  --tab)
-    tab_idx=$2
-    shift
-    ;;
   *)
     echo "Error: Unknown flag: $1" >&2
     exit 1
@@ -59,16 +46,16 @@ while [ $# -gt 0 ]; do
   shift
 done
 
-mkdir -p "$tab_state"
+mkdir -p "$NETERO_STATE"
 
 if [ -n "$anchor_href" ]; then
 
-  if [ ! -f "$tab_state/page.html" ]; then
+  if [ ! -f "$NETERO_STATE/page.html" ]; then
     echo "Error: No page.html found" >&2
     exit 1
   fi
 
-  returned_urls=$(xidel "$tab_state/page.html" -e "//a/@href")
+  returned_urls=$(xidel "$NETERO_STATE/page.html" -e "//a/@href")
 
   url=""
   for returned_url in $returned_urls; do
@@ -87,16 +74,16 @@ if [ -n "$anchor_href" ]; then
   fi
 
 elif [ -n "$anchor_href_with_text" ]; then
-  if [ ! -f "$tab_state/page.html" ]; then
+  if [ ! -f "$NETERO_STATE/page.html" ]; then
     echo "Error: No page.html found" >&2
     exit 1
   fi
-  texts=$(xidel "$tab_state/page.html" -e "//a/text()")
+  texts=$(xidel "$NETERO_STATE/page.html" -e "//a/text()")
 
   a_el=""
   while IFS= read -r text; do
     if [ "$anchor_href_with_text" = "$text" ]; then
-      a_el=$(xidel "$tab_state/page.html" --html -e "//a[text()='$anchor_href_with_text']")
+      a_el=$(xidel "$NETERO_STATE/page.html" --html -e "//a[text()='$anchor_href_with_text']")
       break
     fi
   done <<EOF
@@ -120,17 +107,17 @@ EOF
 
 elif [ -n "$anchor_href_with_aria_label" ]; then
 
-  if [ ! -f "$tab_state/page.html" ]; then
+  if [ ! -f "$NETERO_STATE/page.html" ]; then
     echo "Error: No page.html found" >&2
     exit 1
   fi
 
-  aria_labels=$(xidel "$tab_state/page.html" -e "//a/@aria-label")
+  aria_labels=$(xidel "$NETERO_STATE/page.html" -e "//a/@aria-label")
 
   a_el=""
   while IFS= read -r aria_label; do
     if [ "$anchor_href_with_aria_label" = "$aria_label" ]; then
-      a_el=$(xidel "$tab_state/page.html" --html -e "//a[@aria-label='$anchor_href_with_aria_label']")
+      a_el=$(xidel "$NETERO_STATE/page.html" --html -e "//a[@aria-label='$anchor_href_with_aria_label']")
       break
     fi
   done <<EOF
@@ -154,12 +141,12 @@ EOF
 
 elif [ -n "$img_src" ]; then
 
-  if [ ! -f "$tab_state/page.html" ]; then
+  if [ ! -f "$NETERO_STATE/page.html" ]; then
     echo "Error: No page.html found" >&2
     exit 1
   fi
 
-  returned_srcs=$(xidel "$tab_state/page.html" -e "//img/@src")
+  returned_srcs=$(xidel "$NETERO_STATE/page.html" -e "//img/@src")
 
   url=""
   for returned_src in $returned_srcs; do
@@ -179,17 +166,17 @@ elif [ -n "$img_src" ]; then
 
 elif [ -n "$img_src_with_alt" ]; then
 
-  if [ ! -f "$tab_state/page.html" ]; then
+  if [ ! -f "$NETERO_STATE/page.html" ]; then
     echo "Error: No page.html found" >&2
     exit 1
   fi
 
-  alts=$(xidel "$tab_state/page.html" -e "//img/@alt")
+  alts=$(xidel "$NETERO_STATE/page.html" -e "//img/@alt")
 
   img_el=""
   while IFS= read -r alt; do
     if [ "$img_src_with_alt" = "$alt" ]; then
-      img_el=$(xidel "$tab_state/page.html" --html -e "//img[@alt='$img_src_with_alt']")
+      img_el=$(xidel "$NETERO_STATE/page.html" --html -e "//img[@alt='$img_src_with_alt']")
       break
     fi
   done <<EOF
@@ -214,18 +201,18 @@ EOF
 fi
 
 curl_options=" \
-  --cookie $browser_state/cookie.txt \
-  --cookie-jar $browser_state/cookie.txt \
-  --output $tab_state/body \
-  --write-out \"%output{$tab_state/url.txt}%{url_effective}%output{$tab_state/headers.json}%{header_json}%output{$tab_state/response.json}%{json}\" \
+  --cookie $NETERO_STATE/cookie.txt \
+  --cookie-jar $NETERO_STATE/cookie.txt \
+  --output $NETERO_STATE/body \
+  --write-out \"%output{$NETERO_STATE/url.txt}%{url_effective}%output{$NETERO_STATE/headers.json}%{header_json}%output{$NETERO_STATE/response.json}%{json}\" \
   --compressed \
   --show-error \
   --silent \
   --location \
 "
 
-if [ -f "$tab_state/url.txt" ]; then
-  current_url=$(cat "$tab_state/url.txt")
+if [ -f "$NETERO_STATE/url.txt" ]; then
+  current_url=$(cat "$NETERO_STATE/url.txt")
   current_host=$(echo "$current_url" | cut -d/ -f1-3)
   curl_options="$curl_options \
     --referer '$current_url' \
@@ -240,9 +227,9 @@ fi
 
 eval "curl $curl_options '$url'"
 
-content_type=$(jq -r '.["content-type"][0]' "$tab_state/headers.json")
+content_type=$(jq -r '.["content-type"][0]' "$NETERO_STATE/headers.json")
 if [ "$content_type" = "text/html" ]; then
-  mv "$tab_state/body" "$tab_state/page.html"
-elif [ -f "$tab_state/page.html" ]; then
-  rm "$tab_state/page.html"
+  mv "$NETERO_STATE/body" "$NETERO_STATE/page.html"
+elif [ -f "$NETERO_STATE/page.html" ]; then
+  rm "$NETERO_STATE/page.html"
 fi

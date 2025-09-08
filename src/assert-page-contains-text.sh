@@ -1,6 +1,3 @@
-browser_state="$NETERO_STATE/browser/$(cat "$NETERO_STATE/active-browser.txt")"
-tab_state="$browser_state/tab/$(cat "$NETERO_STATE/active-tab.txt")"
-
 expected=${1:-}
 
 if [ -z "$expected" ]; then
@@ -8,7 +5,7 @@ if [ -z "$expected" ]; then
   exit 1
 fi
 
-if ! grep -q "$expected" "$tab_state/page.html"; then
+if ! grep -q "$expected" "$NETERO_STATE/page.html"; then
   echo "Error: Text not found in page"
   echo "Text:"
   echo "$expected"

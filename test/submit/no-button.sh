@@ -1,7 +1,4 @@
-browser_state="$NETERO_STATE/browser/$(cat "$NETERO_STATE/active-browser.txt")"
-tab_state="$browser_state/tab/$(cat "$NETERO_STATE/active-tab.txt")"
-
-cat >"$tab_state/page.html" <<EOF
+cat >"$NETERO_STATE/page.html" <<EOF
 <form action="/form" method="post">
   <input type="text" name="loremInput">
 </form>

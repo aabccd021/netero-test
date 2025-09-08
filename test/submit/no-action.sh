@@ -1,9 +1,6 @@
-browser_state="$NETERO_STATE/browser/$(cat "$NETERO_STATE/active-browser.txt")"
-tab_state="$browser_state/tab/$(cat "$NETERO_STATE/active-tab.txt")"
+echo "http://localhost:8080/myform" >"$NETERO_STATE/url.txt"
 
-echo "http://localhost:8080/myform" >"$tab_state/url.txt"
-
-cat >"$tab_state/page.html" <<EOF
+cat >"$NETERO_STATE/page.html" <<EOF
 <form method="post">
   <button type="submit">Submit</button>
 </form>

@@ -24,9 +24,8 @@ let
         ];
       }
       ''
-        mkdir ./var
         export NETERO_STATE="$PWD/var/netero"
-        netero-init
+        mkdir -p "$NETERO_STATE"
 
         mkfifo ./ready.fifo
         mkfifo ./exit.fifo
@@ -38,7 +37,7 @@ let
 
         cat ./ready.fifo >/dev/null
 
-        echo "http://localhost:8080/" > "$PWD/var/netero/browser/1/url.txt"
+        echo "http://localhost:8080/" > "$NETERO_STATE/url.txt"
 
         bash -euo pipefail ${testFile} 2>&1 | while IFS= read -r line; do
           printf '\033[33m[client]\033[0m %s\n' "$line"
